@@ -1,8 +1,7 @@
+<!DOCTYPE html>
 {{--
     Este é o template `master` que é extendido pelos templates.
 --}}
-
-<!DOCTYPE html>
 
 {{--
     Declaramos HTML normal
@@ -60,12 +59,13 @@
             {{--
                 função `@yield` chama a extensão, quer dizer, em outras views
                 extendemos esta da seguinte forma:
-                ```
-                @extends('app') //app é o nome do template master (este arquivo)
+
+                @ extends('app') //app é o nome do template master (este arquivo)
 
                 @section('content') //nome do `yield`
                 @stop //fim da sessão
             --}}
+
             @yield('content')
         </div>
     </body>
