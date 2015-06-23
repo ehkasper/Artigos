@@ -7,10 +7,11 @@ namespace App\Http\Controllers;
 use App\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Http\Requests\ArticleRequest;
+use App\Tag;
 use Illuminate\Http\Request;
 use Input;
 use View;
-use App\Tag;
 
 /**
  * Nesse exemplo de controller, fazemos alguma operações de diferentes maneiras Lembre-se:
@@ -59,21 +60,14 @@ class ArticlesController extends Controller
      *
      * @return Response
      */
-    public function store(Request $request)
-    {
 
-        /**
-         * Precisamos validar os dados vindo da nossa requisição. Para tal
-         * usamos dependency injection para "injetar" um objeto 
-         * Request e validarmos
-         */
-        $this->validate($request, [
-            'title' => ['required'],
-            'body'  => ['required']
-        ], [
-            'title.required' => 'Campo título é obrigatório',
-            'body.required' => 'Campo corpo é obrigatório',
-        ]);
+    /**
+     * Precisamos validar os dados vindo da nossa requisição. Para tal
+     * usamos dependency injection para "injetar" um objeto 
+     * ArticleRequest e validamos nessa classe
+     */    
+    public function store(ArticleRequest $request)
+    {
 
         /**
          * Nesse método, instanciamos um novo artigo (`model`) e criamos atributos
@@ -151,22 +145,14 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function update(Request $request, $id)
+
+    /**
+     * Precisamos validar os dados vindo da nossa requisição. Para tal
+     * usamos dependency injection para "injetar" um objeto 
+     * ArticleRequest e validamos nessa classe
+     */
+    public function update(ArticleRequest $request, $id)
     {
-
-        /**
-         * Precisamos validar os dados vindo da nossa requisição. Para tal
-         * usamos dependency injection para "injetar" um objeto 
-         * Request e validarmos
-         */
-        $this->validate($request, [
-            'title' => ['required'],
-            'body'  => ['required']
-        ], [
-            'title.required' => 'Campo título é obrigatório',
-            'body.required' => 'Campo corpo é obrigatório',
-        ]);
-
 
         // Buscamos o artigo, novamente com `find`
         $article = Article::find($id);
