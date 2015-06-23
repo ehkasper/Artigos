@@ -22,6 +22,11 @@
                 <textarea name="body" id="body" class="form-control" rows="10">{{ old('body') }}</textarea>
             </div>
 
+            <div class="form-group">
+                <label for="tags">Tags (separe por ponto e vírgula)</label>
+                <input type="text" name="tags" value="{{ old('tags') }}" class="form-control">
+            </div>
+
             <button class="btn btn-default btn-primary">Enviar</button>
         </form>
     </div>

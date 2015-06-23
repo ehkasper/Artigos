@@ -4,12 +4,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Article;
+use App\Http\Controllers\Controller;
+use App\Http\Requests;
+use Illuminate\Http\Request;
 use Input;
 use View;
+use App\Tag;
 
 /**
  * Nesse exemplo de controller, fazemos alguma operações de diferentes maneiras Lembre-se:
@@ -72,6 +73,36 @@ class ArticlesController extends Controller
 
         // Aqui persistimos o model na base de dados. A inserção será automaticamente criada
         $article->save();
+
+        /**
+         * Aqui explodimos a string tags em um array e inserimos
+         */
+        $tags = explode(';', Input::get('tags'));
+        foreach ($tags as $value) {
+            $tag             = new Tag;
+            $tag->tag        = $value;
+            $tag->article_id = $article->id;
+
+            $tag->save();
+        }
+
+        /**
+         * Outros modos de inserir as tags:
+         */
+
+        // via create
+
+        // foreach ($tags as $value) {
+        //     $tag = new Tag;
+        //     $tag->create([ 'tag' => $value, 'article_id' => $article->id ]);
+        // }
+        
+        // via relacionamento do eloquent
+        
+        // foreach ($tags as $value) {
+        //     $article->tags()->create([ 'tag' => $value, 'article_id' => $article->id ]);
+        // }
+
 
         /**
          * Por fim, retornamos um redirecionamento
@@ -146,6 +177,20 @@ class ArticlesController extends Controller
         $article->save();
 
         /**
+         * Separamos o explode em um método para melhor legibilidade
+         */
+
+        foreach ($this->tags() as $value) {
+            $article->tags()->save(new Tag(['tag' => $value]));
+        }
+
+        /**
+         * Perceba que não podemos excluir as tags, apenas adicionar. 
+         * Como você mudaria isso?
+         */
+
+
+        /**
          * Por fim, retornamos um redirecionamento
          * onde passamos a URI com uma mensagem
          * para darmos feedback ao usuário.
@@ -174,5 +219,15 @@ class ArticlesController extends Controller
          */
         return redirect('/artigos')
                 ->with('message', 'O artigo foi excluído com sucesso.');
+    }
+
+    /**
+     * Métodos que criamos para melhorar a ligibilidade dos métodos
+     * Veja o método store para uma utilização sem esse método
+     * Veja update para ver a implementação através desse método
+     */
+    private function tags()
+    {
+        return explode(';', Input::get('tags'));
     }
 }
