@@ -59,8 +59,22 @@ class ArticlesController extends Controller
      *
      * @return Response
      */
-    public function store()
+    public function store(Request $request)
     {
+
+        /**
+         * Precisamos validar os dados vindo da nossa requisição. Para tal
+         * usamos dependency injection para "injetar" um objeto 
+         * Request e validarmos
+         */
+        $this->validate($request, [
+            'title' => ['required'],
+            'body'  => ['required']
+        ], [
+            'title.required' => 'Campo título é obrigatório',
+            'body.required' => 'Campo corpo é obrigatório',
+        ]);
+
         /**
          * Nesse método, instanciamos um novo artigo (`model`) e criamos atributos
          * correspondentes aos campos na tabela. Os dados são pegos através
@@ -139,6 +153,21 @@ class ArticlesController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        /**
+         * Precisamos validar os dados vindo da nossa requisição. Para tal
+         * usamos dependency injection para "injetar" um objeto 
+         * Request e validarmos
+         */
+        $this->validate($request, [
+            'title' => ['required'],
+            'body'  => ['required']
+        ], [
+            'title.required' => 'Campo título é obrigatório',
+            'body.required' => 'Campo corpo é obrigatório',
+        ]);
+
+
         // Buscamos o artigo, novamente com `find`
         $article = Article::find($id);
 
