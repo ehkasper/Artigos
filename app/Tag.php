@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
     protected $fillable = ['article_id', 'tag'];
+
+    public function articles()
+    {
+        return $this->belongsToMany('App\Article');
+    }
 }

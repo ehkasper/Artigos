@@ -75,34 +75,11 @@ class ArticlesController extends Controller
         $article->save();
 
         /**
-         * Aqui explodimos a string tags em um array e inserimos
+         * Sincronizamos os artigos e tags, ou seja, os ids serão inseridos
+         * se não existirem, ou removidos se não constarem no array
+         * de $this->tags()
          */
-        $tags = explode(';', Input::get('tags'));
-        foreach ($tags as $value) {
-            $tag             = new Tag;
-            $tag->tag        = $value;
-            $tag->article_id = $article->id;
-
-            $tag->save();
-        }
-
-        /**
-         * Outros modos de inserir as tags:
-         */
-
-        // via create
-
-        // foreach ($tags as $value) {
-        //     $tag = new Tag;
-        //     $tag->create([ 'tag' => $value, 'article_id' => $article->id ]);
-        // }
-        
-        // via relacionamento do eloquent
-        
-        // foreach ($tags as $value) {
-        //     $article->tags()->create([ 'tag' => $value, 'article_id' => $article->id ]);
-        // }
-
+        $article->tags()->sync($this->tags());
 
         /**
          * Por fim, retornamos um redirecionamento
@@ -177,17 +154,11 @@ class ArticlesController extends Controller
         $article->save();
 
         /**
-         * Separamos o explode em um método para melhor legibilidade
+         * Sincronizamos os artigos e tags, ou seja, os ids serão inseridos
+         * se não existirem, ou removidos se não constarem no array
+         * de $this->tags()
          */
-
-        foreach ($this->tags() as $value) {
-            $article->tags()->save(new Tag(['tag' => $value]));
-        }
-
-        /**
-         * Perceba que não podemos excluir as tags, apenas adicionar. 
-         * Como você mudaria isso?
-         */
+        $article->tags()->sync($this->tags()); // Mesmo comando do método store
 
 
         /**
@@ -222,12 +193,30 @@ class ArticlesController extends Controller
     }
 
     /**
-     * Métodos que criamos para melhorar a ligibilidade dos métodos
-     * Veja o método store para uma utilização sem esse método
-     * Veja update para ver a implementação através desse método
+     * Buscamos as tags que serão anexadas às pivot tables
      */
     private function tags()
     {
-        return explode(';', Input::get('tags'));
+        $tags   = explode(';', Input::get('tags'));
+        $tagsId = [];
+        foreach ($tags as $tag) {
+            // Normalizamos a tag
+            $tag = trim($tag);
+
+            /**
+             * Testamos se as tags existem Se existirem
+             * apenas adicionamos ao array Caso
+             * contrário, criamos e adicionamos
+             */
+            $tagModel = Tag::where('tag', $tag)->first();
+
+            if (is_null($tagModel)) {
+                $tagModel = Tag::create(['tag' => $tag]);
+            }
+            
+            array_push($tagsId, $tagModel->id);
+        }
+
+        return $tagsId;
     }
 }
